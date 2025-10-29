@@ -1,6 +1,6 @@
 # FretFlow: The Pentatonic Map 🎸
 
-<img width="1205" height="803" alt="image" src="https://github.com/user-attachments/assets/1da12b98-252f-46cb-9323-843831d5a511" />
+<img width="1190" height="847" alt="image" src="https://github.com/user-attachments/assets/e1f58768-854e-4094-89df-d584c90c9f2d" />
 
 
 FretFlow is an interactive, mobile-friendly web application designed to help guitarists master the **Pentatonic Scale** and connect it to the **CAGED System** across the entire fretboard. Visualize scale patterns, key relationships, and root notes instantly.
