@@ -280,6 +280,59 @@
                 0 0 25px rgba(0, 255, 136, 0.4); /* Fainter outer halo */
             border-color: #008834;
         }
+        
+        .select-wrapper {
+            /* Required to position the select element relative to the wrapper */
+            position: relative; 
+            /* The wrapper should match the width/height of the select */
+            width: 100%; 
+            /* Set the desired height */
+            height: 40px; 
+        }
+
+        /* Key Select dropdown input styling */
+        select#key-select {
+            font-size: 1.2em;
+            width: 100%;
+            border-radius: 25px;
+            padding-left: 15px; /* Adjust as needed for text to not overlap arrow */
+            /* Padding right should be set to account for the custom caret area */
+            padding-right: 35px; /* Ensure enough space for the custom caret */
+            height: 40px;
+            background-color: var(--amp-bg);
+            border: 3px solid #222;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 1.0), 0 0 0 1px #353535; 
+            padding-right: 8px;
+            cursor: pointer;
+
+            /* 3. Hide the native dropdown arrow in various browsers */
+            -webkit-appearance: none; /* Chrome, Safari, Opera */
+            -moz-appearance: none;    /* Firefox */
+            appearance: none;         /* Standard */
+        }
+
+        /* 4. Add the custom SVG caret using background properties */
+        select#key-select {
+            /* Use the SVG Data URI as a background image */
+            background-image: var(--custom-caret-svg);
+            
+            /* Center the background image vertically */
+            background-position: right 15px center; /* <-- THIS CONTROLS PADDING */
+            
+            /* Do not repeat the background image */
+            background-repeat: no-repeat;
+            
+            /* Size the background image (the caret) */
+            background-size: 20px 20px; /* Adjust size as needed */
+            
+            /* Additional background color from your original style (if needed) */
+            background-color: var(--amp-bg);
+        }
+
+        /* Define the SVG in a variable for cleaner code, as per step 2 */
+        :root {
+            --custom-caret-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='white' stroke-width='2' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        }
 
         
         /* Base Styling for each Mode Switch (Label) */
@@ -345,6 +398,7 @@
             border-color: #008888;
         }
 
+        
  
     </style>
 </head>
@@ -365,9 +419,10 @@
         <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
             
             <!-- Key Selector -->
-            <div>
+            <div class="select-wrapper">
                 <label for="key-select" class="block text-sm font-medium text-gray-300 mb-1">Key</label>
-                <select id="key-select" class="w-full bg-gray-700 border-gray-600 text-white rounded-full shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                <select id="key-select" class="">
+                <!-- <select id="key-select" class="w-full bg-gray-700 border-gray-600 text-white rounded-full shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"> -->
                     <option value="0">C</option>
                     <option value="1">C# / Db</option>
                     <option value="2">D</option>
