@@ -7,6 +7,28 @@
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+         /* Base Styles for the Component */
+        :root {
+            --glow-color: #00ff37; /* Existing blue glow for CAGED */
+            --on-text: #cacaca;
+            --off-text: #444;
+            --off-light: #3a3a3a;
+            --amp-bg: #1a1a1a;
+            --panel-bg: #404040;
+
+            /* New colors for the green mode buttons */
+            --mode-off-bg: #3c5e3d; /* Darker green for inactive state */
+            --mode-off-border: #4a754b;
+            --mode-on-bg: #32cd32; /* Lime Green for active state */
+            --mode-on-border: #2bad2b;
+            --mode-on-text: #ffffff; /* White text for active state */
+        }
+        
+        /* Hide the actual inputs - essential for functionality */
+        .hidden-checkbox, .hidden-radio {
+            display: none;
+        }
+
         /* Custom styles for the app */
         body {
             font-family: 'Inter', sans-serif;
@@ -70,7 +92,7 @@
         }
         .dot-dimmed {
             background-color: #374151; /* gray-700 */
-            opacity: 0.6;
+            opacity: 0.2;
         }
         .dot-highlight {
             border: 3px solid #27b45b; 
@@ -84,6 +106,17 @@
             border: 3px solid #fde047; /* yellow-300 */
             background-color: #71774e;
             box-shadow: 0 0 10px #fde047;
+        }
+        
+        /* Triad note style */
+        .dot-triad {
+            border: 3px solid #da70d6; /* violet */
+            background-color: #8a4b8a;
+            box-shadow: 0 0 8px #da70d6;
+        }
+
+        .dot-root.dot-triad {
+            box-shadow: 0 0 8px #da70d6, 0px 0px 0px 5px #fde047;
         }
         
         /* Fret marker styles: Moved to standard inlay positions */
@@ -151,6 +184,167 @@
             caret-color: transparent;
             user-select: none;
         }
+
+
+        .amp-control-container {
+            caret-color: transparent;
+            user-select: none;
+            /* padding: 20px; */
+            /* background-color: #554433; 
+            background-color: #2c2a3f; 
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            caret-color: transparent;
+            user-select: none; */
+        }
+
+        /* Hide the actual checkbox */
+        .hidden-checkbox {
+            display: none;
+        }
+
+        /* Base Switch Styling */
+        .amp-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 250px; /* Adjust as needed */
+            height: 40px;
+            border-radius: 20px;
+            padding: 0 5px;
+            cursor: pointer;
+            background-color: var(--amp-bg);
+            border: 3px solid #222;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 1.0), 0 0 0 1px #353535; 
+            transition: background-color 0.3s ease;
+        }
+
+        /* Text Styling */
+        .switch-text {
+            color: #747474; /* Default dark/off text color */
+            font-size: 1.2em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-left: 20px;
+            text-shadow: none;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        /* Indicator Light Styling (Off State) */
+        .indicator-light {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border-radius: 50%;
+            background-color: #3a3a3a; 
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid #222;
+        }
+
+        /* -------------------------------------- */
+        /* Checked State (ON) STYLES */
+        /* -------------------------------------- */
+
+        /* Target the switch (label) when the hidden checkbox is checked */
+        .hidden-checkbox:checked + .amp-switch {
+            /* Optional: Slight background change for 'active' feel */
+            background-color: #0d0d0d;
+        }
+
+        /* Change Text Color and Apply Glow */
+        .hidden-checkbox:checked + .amp-switch .switch-text {
+            color: var(--on-text);
+            /*text-shadow: 
+                0 0 2px #b6b6b6, 
+                0 0 10px #a5a5a5, 
+                0 0 20px rgba(238, 238, 238, 0.5); */
+        }
+
+        /* Change Indicator Light Color and Apply Glow */
+        .hidden-checkbox:checked + .amp-switch .indicator-light {
+            background-color: #00ffff; /* Bright center */
+            box-shadow: 
+                0 0 8px 0px #00ffff, /* Stronger inner glow */
+                0 0 15px rgba(0, 255, 255, 0.7), /* Medium glow */
+                0 0 25px rgba(0, 255, 255, 0.4); /* Fainter outer halo */
+            border-color: #008888;
+        }
+        
+        /* Change Indicator Light Color and Apply Glow */
+        .hidden-checkbox:checked + .amp-switch .indicator-light.green {
+            background-color: var(--glow-color); /* Bright center */
+            box-shadow: 
+                0 0 8px 0px var(--glow-color), /* Stronger inner glow */
+                0 0 15px rgba(0, 255, 34, 0.7), /* Medium glow */
+                0 0 25px rgba(0, 255, 136, 0.4); /* Fainter outer halo */
+            border-color: #008834;
+        }
+
+        
+        /* Base Styling for each Mode Switch (Label) */
+        .mode-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Space text and light */
+            width: 250px; /* Adjust as needed */
+            height: 40px;
+            border-radius: 25px; /* Fully rounded */
+            padding: 0 8px;
+            cursor: pointer;
+            background-color: var(--amp-bg);
+            border: 3px solid #222;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 1.0), 0 0 0 1px #353535; 
+            transition: all 0.3s ease;
+        }
+        
+        /* Radio Text (Off State) */
+        .mode-text {
+            color: var(--off-text); 
+            font-size: 1.2rem; /* Match CAGED size */
+            font-weight: 900;
+            letter-spacing: 3px;
+            margin-left: 20px;
+            text-transform: uppercase;
+            text-shadow: none;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        /* Indicator Light Styling (Off State - Reusing .indicator-light styles) */
+        .mode-indicator-light {
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border-radius: 50%;
+            background-color: var(--off-light);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.9);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid #222;
+            margin-right: 5px;
+        }
+
+        /* RADIO CHECKED STATE (ON) */
+        .hidden-radio:checked + .mode-switch {
+            /* No change to background, glow comes from text/light */
+            /* border-color: var(--border-color);  */
+            background-color: #0d0d0d;
+        }
+
+        /* Radio Text (On State) */
+        .hidden-radio:checked + .mode-switch .mode-text {
+            color: var(--on-text); 
+        }
+
+        /* Radio Indicator Light (On State) */
+        .hidden-radio:checked + .mode-switch .mode-indicator-light {
+            background-color: var(--glow-color);
+            box-shadow: 
+                0 0 10px var(--glow-color), 
+                0 0 20px rgba(0, 240, 255, 0.8), 
+                0 0 40px rgba(0, 240, 255, 0.5); 
+            border-color: #008888;
+        }
+
  
     </style>
 </head>
@@ -167,7 +361,7 @@
     </header>
 
     <!-- Controls -->
-    <section class="p-4 bg-gray-800 shadow-lg w-full md:max-w-6xl md:mx-auto">
+    <section class="p-4 bg-gray-800 shadow-lg w-full md:max-w-6xl md:mx-auto rounded-lg">
         <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
             
             <!-- Key Selector -->
@@ -189,14 +383,27 @@
                 </select>
             </div>
             
-            <!-- Scale Selector -->
-            <div>
-                <label for="scale-select" class="block text-sm font-medium text-gray-300 mb-1">Pentatonic</label>
-                <select id="scale-select" class="w-full bg-gray-700 border-gray-600 text-white rounded-full shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="major">Major</option>
-                    <option value="minor">Minor</option>
-                </select>
+            <!-- New Mode Selector radio buttons -->
+            <div class="radio-group-wrapper md:col-span-2">
+                <h2 class="control-label">Mode</h2> 
+                <div class="radio-group-container flex gap-2">
+
+                    <!-- Major Mode Input/Label -->
+                    <input type="radio" id="mode-major" name="music-mode" value="major" class="hidden-radio" checked />
+                    <label for="mode-major" class="mode-switch">
+                        <span class="mode-text">Major</span>
+                        <span class="mode-indicator-light"></span>
+                    </label>
+
+                    <!-- Minor Mode Input/Label -->
+                    <input type="radio" id="mode-minor" name="music-mode" value="minor" class="hidden-radio" />
+                    <label for="mode-minor" class="mode-switch">
+                        <span class="mode-text">Minor</span>
+                        <span class="mode-indicator-light"></span>
+                    </label>
+                </div>
             </div>
+
 
             <!-- Relative Scale Display -->
             <div class="md:col-span-3 text-center md:text-left">
@@ -206,7 +413,7 @@
             <!-- CAGED Shape Selector -->
             <fieldset id="caged-selector-section" class="md:col-span-3">
                 <div class="flex flex-wrap gap-4 items-center justify-between">
-                    <legend class="block text-sm font-medium text-gray-300 mb-2">CAGED Shape</legend>
+                    <legend class="block text-sm font-medium text-gray-300 mb-2">CAGED Pentatonic Shape</legend>
                 </div>
                 
                 <div class="flex flex-wrap gap-4" id="caged-select-controls">
@@ -241,10 +448,23 @@
             </fieldset>
 
             <!-- Toggle Notes -->
-            <div class="flex items-center space-x-2 my-3">
-                <input type="checkbox" id="toggle-notes" class="h-4 w-4 rounded bg-gray-700 border-gray-600 text-blue-600 focus:ring-blue-500">
-                <label for="toggle-notes" class="text-sm font-medium text-gray-300">Note Names</label>
-            </div>
+            <div class="amp-control-container">
+               <input type="checkbox" id="toggle-notes" class="hidden-checkbox" checked>
+               <label for="toggle-notes" class="amp-switch">
+                   <span class="switch-text">NOTE NAMES</span>
+                   <span class="indicator-light green"></span>
+               </label>
+           </div>
+           
+           <!-- Toggle Triad Notes -->
+           <div class="amp-control-container">
+              <input type="checkbox" id="toggle-triad" class="hidden-checkbox">
+              <label for="toggle-triad" class="amp-switch">
+                  <span class="switch-text">TRIAD NOTES</span>
+                  <span class="indicator-light green"></span>
+              </label>
+          </div>
+           
         </div>
     </section>
 
@@ -302,11 +522,13 @@
         // --- DOM ELEMENTS ---
 
         const keySelect = document.getElementById('key-select');
-        const scaleSelect = document.getElementById('scale-select');
+        // const scaleSelect = document.getElementById('scale-select');
+        const modeRadios = document.querySelectorAll('input[name="music-mode"]');
         const highlightControls = document.getElementById('caged-select-controls');
         const fretboardDiv = document.getElementById('fretboard');
         const relativeScaleDisplay = document.getElementById('relative-scale-display');
         const notesToggle = document.getElementById('toggle-notes'); // ADDED ()
+        const triadToggle = document.getElementById('toggle-triad');
 
         // --- STATE ---
 
@@ -407,6 +629,42 @@
 
             const currentRange = highlightRanges[currentHighlight];
 
+            // Define triad notes for each CAGED shape (root, third, fifth)
+            // These are the intervals relative to the root note of the chord
+            const triadIntervals = {
+                'E Shape': [0, 4, 7], // Major triad: R, 3, 5
+                'D Shape': [0, 4, 7],
+                'C Shape': [0, 4, 7],
+                'A Shape': [0, 4, 7],
+                'G Shape': [0, 4, 7]
+            };
+
+            // Get the root note for the current CAGED shape
+            let shapeRootIndex;
+            if (currentHighlight !== 'All') {
+                // For each shape, the root is at a specific position relative to the major root
+                switch(currentHighlight) {
+                    case 'E Shape':
+                        shapeRootIndex = majorRootIndex;
+                        break;
+                    case 'D Shape':
+                        shapeRootIndex = (majorRootIndex + 2) % 12;
+                        break;
+                    case 'C Shape':
+                        shapeRootIndex = (majorRootIndex + 4) % 12;
+                        break;
+                    case 'A Shape':
+                        shapeRootIndex = (majorRootIndex + 5) % 12;
+                        break;
+                    case 'G Shape':
+                        shapeRootIndex = (majorRootIndex + 7) % 12;
+                        break;
+                }
+            }
+
+            // Get triad toggle state
+            const showTriad = triadToggle.checked;
+
             // --- Build Frets (Columns) ---
             for (let f = 0; f <= FRET_COUNT; f++) {
                 const fretEl = document.createElement('div');
@@ -456,6 +714,26 @@
                             noteDotEl.classList.add('dot-root');
                         }
 
+                        // Check if this note is a triad note for the current shape
+                        let isTriadNote = false;
+                        // if (showTriad && currentHighlight !== 'All') {
+                        if (showTriad) {
+                            // For triad notes, we want to highlight the root, 3rd, and 5th of the current key
+                            // not the root of the CAGED shape
+                            const keyRootIndex = currentKey;
+                            // Calculate the interval of this note relative to the key root
+                            const interval = (noteIndex - keyRootIndex + 12) % 12;
+                            // Check if this interval is in the triad (R, 3, 5)
+                            // For minor keys, we need to use a minor triad (R, m3, 5)
+                            if (currentScale === 'minor') {
+                                // Minor triad: R, m3, 5 (intervals 0, 3, 7)
+                                isTriadNote = [0, 3, 7].includes(interval);
+                            } else {
+                                // Major triad: R, 3, 5 (intervals 0, 4, 7)
+                                isTriadNote = [0, 4, 7].includes(interval);
+                            }
+                        }
+
                         // --- LOGIC CHANGED () ---
                         if (currentHighlight === 'All') {
                             noteDotEl.classList.add('dot-primary');
@@ -473,6 +751,11 @@
                             }
                         }
                         // --- END CHANGE ---
+
+                        // Add triad note styling if applicable
+                        if (isTriadNote) {
+                            noteDotEl.classList.add('dot-triad');
+                        }
                         
                         stringEl.appendChild(noteDotEl);
                     }
@@ -488,7 +771,8 @@
 
         function handleControlsChange() {
             currentKey = parseInt(keySelect.value, 10);
-            currentScale = scaleSelect.value;
+            const selectedMode = document.querySelector('input[name="music-mode"]:checked');
+            currentScale = selectedMode ? selectedMode.value : 'major'; // Default to 'major' if none is checked
             currentHighlight = document.querySelector('input[name="highlight-shape"]:checked').value;
             
             updateRelativeScaleDisplay();
@@ -496,8 +780,12 @@
         }
 
         keySelect.addEventListener('change', handleControlsChange);
-        scaleSelect.addEventListener('change', handleControlsChange);
+        // scaleSelect.addEventListener('change', handleControlsChange);
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', handleControlsChange);
+        });
         notesToggle.addEventListener('change', handleControlsChange); // ADDED ()
+        triadToggle.addEventListener('change', handleControlsChange); // ADDED ()
         highlightControls.addEventListener('change', (e) => {
             if (e.target.name === 'highlight-shape') {
                 handleControlsChange();
