@@ -225,7 +225,7 @@
             font-size: 1.2em;
             font-weight: bold;
             letter-spacing: 1px;
-            margin-left: 20px;
+            margin-left: 10px;
             text-shadow: none;
             transition: color 0.3s ease, text-shadow 0.3s ease;
         }
@@ -357,7 +357,7 @@
             font-size: 1.2rem; /* Match CAGED size */
             font-weight: 900;
             letter-spacing: 3px;
-            margin-left: 20px;
+            margin-left: 10px;
             text-transform: uppercase;
             text-shadow: none;
             transition: color 0.3s ease, text-shadow 0.3s ease;
@@ -414,7 +414,7 @@
         </p> -->
     </header>
 
-    <!-- Controls -->
+    <!-- Control Panel -->
     <section class="p-4 bg-gray-800 shadow-lg w-full md:max-w-6xl md:mx-auto rounded-lg">
         <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
             
@@ -461,8 +461,10 @@
 
 
             <!-- Relative Scale Display -->
-            <div class="md:col-span-3 text-center md:text-left">
-                <p id="relative-scale-display" class="text-sm text-blue-300 h-6"></p>
+            <div class="md:col-span-3 text-center md:text-left space-y-1">
+                <p id="relative-scale-display" class="text-sm text-blue-300"></p>
+                <p id="pentatonic-notes-display" class="text-sm text-gray-400"></p>
+                <p id="diatonic-notes-display" class="text-sm text-gray-400"></p>
             </div>
 
             <!-- CAGED Shape Selector -->
@@ -515,7 +517,16 @@
            <div class="amp-control-container">
               <input type="checkbox" id="toggle-triad" class="hidden-checkbox">
               <label for="toggle-triad" class="amp-switch">
-                  <span class="switch-text">TRIAD NOTES</span>
+                  <span class="switch-text">TRIAD HIGHLIGHT</span>
+                  <span class="indicator-light green"></span>
+              </label>
+          </div>
+           
+           <!-- Toggle Dim Non-CAGED Notes -->
+           <div class="amp-control-container">
+              <input type="checkbox" id="triad-focus" class="hidden-checkbox">
+              <label for="triad-focus" class="amp-switch">
+                  <span class="switch-text">TRIAD FOCUS</span>
                   <span class="indicator-light green"></span>
               </label>
           </div>
@@ -561,6 +572,11 @@
             minor: [0, 3, 5, 7, 10]
         };
 
+        const DIATONIC_SCALES = {
+            major: [0, 2, 4, 5, 7, 9, 11], // Major (Ionian)
+            minor: [0, 2, 3, 5, 7, 8, 10]  // Natural Minor (Aeolian)
+        };
+
         // Standard Tuning: High E (0) to Low E (5)
         const OPEN_STRINGS = [
             4,  // High E (String 0)
@@ -582,8 +598,11 @@
         const highlightControls = document.getElementById('caged-select-controls');
         const fretboardDiv = document.getElementById('fretboard');
         const relativeScaleDisplay = document.getElementById('relative-scale-display');
+        const pentatonicNotesDisplay = document.getElementById('pentatonic-notes-display');
+        const diatonicNotesDisplay = document.getElementById('diatonic-notes-display');
         const notesToggle = document.getElementById('toggle-notes'); // ADDED ()
-        const triadToggle = document.getElementById('toggle-triad');
+        let triadToggle = document.getElementById('toggle-triad');
+        let triadFocusToggle = document.getElementById('triad-focus');
 
         // --- STATE ---
 
@@ -603,26 +622,32 @@
         }
 
         /**
-         * Calculates the relative minor/major key.
+         * Updates the text displays for relative, pentatonic, and diatonic scales.
          */
-        function updateRelativeScaleDisplay() {
+        function updateScaleInfoDisplays() {
+            // --- 1. Relative Scale ---
             let relativeNoteIndex;
             let relativeScaleType;
             
             if (currentScale === 'major') {
-                // Relative minor is 3 semitones down (or 9 up)
-                relativeNoteIndex = (currentKey + 9) % 12;
+                relativeNoteIndex = (currentKey + 9) % 12; // Relative minor
                 relativeScaleType = 'Minor';
             } else {
-                // Relative major is 3 semitones up
-                relativeNoteIndex = (currentKey + 3) % 12;
+                relativeNoteIndex = (currentKey + 3) % 12; // Relative major
                 relativeScaleType = 'Major';
             }
-            
-            const keyName = NOTES[currentKey].length === 1 ? NOTES[currentKey] : `${NOTES[currentKey]} / ${NOTES_FLAT[currentKey]}`;
             const relativeKeyName = NOTES[relativeNoteIndex].length === 1 ? NOTES[relativeNoteIndex] : `${NOTES[relativeNoteIndex]} / ${NOTES_FLAT[relativeNoteIndex]}`;
-            
-            relativeScaleDisplay.textContent = `Relative ${currentScale === 'minor' ? 'Major' : 'Minor'}: ${relativeKeyName} ${relativeScaleType} Pentatonic`;
+            relativeScaleDisplay.textContent = `Relative ${relativeScaleType}: ${relativeKeyName} ${relativeScaleType} Pentatonic`;
+
+            // --- 2. Pentatonic Scale Notes ---
+            const pentatonicIntervals = SCALES[currentScale];
+            const pentatonicNoteNames = pentatonicIntervals.map(interval => NOTES[(currentKey + interval) % 12]).join(' - ');
+            pentatonicNotesDisplay.innerHTML = `<strong>Pentatonic:</strong> ${pentatonicNoteNames}`;
+
+            // --- 3. Diatonic Scale Notes ---
+            const diatonicIntervals = DIATONIC_SCALES[currentScale];
+            const diatonicNoteNames = diatonicIntervals.map(interval => NOTES[(currentKey + interval) % 12]).join(' - ');
+            diatonicNotesDisplay.innerHTML = `<strong>Diatonic:</strong> ${diatonicNoteNames}`;
         }
 
         /**
@@ -718,7 +743,14 @@
             }
 
             // Get triad toggle state
-            const showTriad = triadToggle.checked;
+            let showTriad = triadToggle.checked;
+
+            // Get triadFocusToggle state
+            let triadFocus = triadFocusToggle.checked;
+            if (triadFocus) {
+                showTriad = true;
+                triadToggle.checked = true;
+            }
 
             // --- Build Frets (Columns) ---
             for (let f = 0; f <= FRET_COUNT; f++) {
@@ -789,23 +821,52 @@
                             }
                         }
 
-                        // --- LOGIC CHANGED () ---
-                        if (currentHighlight === 'All') {
-                            noteDotEl.classList.add('dot-primary');
-                            // Show note name if toggled
-                            if (showNotes) noteDotEl.textContent = noteName;
-                        } else {
-                            const isHighlighted = isFretInHighlightRange(f, currentRange);
-                            if (isHighlighted) {
-                                noteDotEl.classList.add('dot-highlight');
-                                // Show note name if toggled
-                                if (showNotes) noteDotEl.textContent = noteName;
+                        const isHighlighted = currentHighlight !== 'All' && isFretInHighlightRange(f, currentRange);
+
+                        // Determine the primary style of the dot (highlighted, normal, or dimmed)
+                        let dotStyleClass = '';
+                        let showNoteName = true; // Assume we show the note name by default
+
+                        if (triadFocus) {
+                            // TRIAD FOCUS mode is ON
+                            if (isTriadNote) {
+                                // It's a triad note, so it should be visible.
+                                // Highlight it if it's within the selected CAGED shape.
+                                dotStyleClass = isHighlighted ? 'dot-highlight' : 'dot-primary';
+                                if (currentHighlight !== 'All' && !isHighlighted) {
+                                    // Special case: If a shape is selected but this triad note is outside it,
+                                    // treat it like a regular scale note (dot-primary), not a highlighted one.
+                                    dotStyleClass = 'dot-dimmed';
+                                }
                             } else {
-                                noteDotEl.classList.add('dot-dimmed');
-                                // Dimmed notes never show the note name
+                                // It's NOT a triad note, so it must be dimmed in focus mode.
+                                dotStyleClass = 'dot-dimmed';
+                                showNoteName = false;
+                            }
+                        } else {
+                            // TRIAD FOCUS mode is OFF (Normal operation)
+                            if (currentHighlight === 'All') {
+                                // Show all notes normally
+                                dotStyleClass = 'dot-primary';
+                            } else {
+                                // A specific shape is selected
+                                if (isHighlighted) {
+                                    // Note is inside the selected shape
+                                    dotStyleClass = 'dot-highlight';
+                                } else {
+                                    // Note is outside the selected shape
+                                    dotStyleClass = 'dot-dimmed'; // Or 'dot-dimmed' if you prefer to hide non-shape notes completely
+                                }
                             }
                         }
-                        // --- END CHANGE ---
+
+                        // Apply the determined style and text
+                        if (dotStyleClass) {
+                            noteDotEl.classList.add(dotStyleClass);
+                            if (showNotes && showNoteName) {
+                                noteDotEl.textContent = noteName;
+                            }
+                        }
 
                         // Add triad note styling if applicable
                         if (isTriadNote) {
@@ -830,7 +891,7 @@
             currentScale = selectedMode ? selectedMode.value : 'major'; // Default to 'major' if none is checked
             currentHighlight = document.querySelector('input[name="highlight-shape"]:checked').value;
             
-            updateRelativeScaleDisplay();
+            updateScaleInfoDisplays();
             renderFretboard();
         }
 
@@ -840,7 +901,16 @@
             radio.addEventListener('change', handleControlsChange);
         });
         notesToggle.addEventListener('change', handleControlsChange); // ADDED ()
-        triadToggle.addEventListener('change', handleControlsChange); // ADDED ()
+        triadToggle.addEventListener('change', (e) => {
+            // If triadToggle is being unchecked, also uncheck triadFocusToggle
+            if (!e.target.checked) {
+                triadFocusToggle.checked = false;
+            }
+            handleControlsChange();
+        });
+        triadFocusToggle.addEventListener('change', (e) => {
+            handleControlsChange();
+        });
         highlightControls.addEventListener('change', (e) => {
             if (e.target.name === 'highlight-shape') {
                 handleControlsChange();
